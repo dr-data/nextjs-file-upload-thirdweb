@@ -117,9 +117,25 @@ export default function Home() {
         form.append('image', file);
 
         // Get the image bytes from the form data image file.
-        const buffer = file.arrayBuffer();
-        let byteArray = new Int8Array(buffer);
-        console.log(byteArray);
+        // const buffer = file.arrayBuffer();
+        // let byteArray = new Int8Array(buffer);
+        // console.log(byteArray);
+
+        let reader = new FileReader();
+        let fileByteArray = [];
+
+        // Iter and add the bytes to the array.
+        reader.readAsArrayBuffer(file);
+        reader.onload = function (e) {
+            let buffer = e.target.result;
+            let byteArray = new Int8Array(buffer);
+
+            for (let i = 0; i < byteArray.length; i++) {
+                fileByteArray.push(byteArray[i]);
+            }
+        }
+
+        console.log(fileByteArray);
 
         // Minting the NFT asynchronously using IIFE.
         (async () => {
@@ -127,7 +143,7 @@ export default function Home() {
                 await nftMod.mint({
                     name: values.name,
                     description: values.description,
-                    image: byteArray,
+                    image: fileByteArray,
                     properties: {}
                 })
             );
