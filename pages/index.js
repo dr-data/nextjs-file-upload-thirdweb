@@ -1,11 +1,14 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import Head from 'next/head';
+
 import { ThirdwebSDK } from '@3rdweb/sdk';
 import { ConnectWallet } from '@3rdweb/react';
 import { useWeb3 } from '@3rdweb/hooks';
+
 import { useFormik } from 'formik';
 import { useDropzone } from 'react-dropzone';
-import Head from 'next/head';
 
+// Regeneration error fix:
 import 'regenerator-runtime/runtime';
 
 const validate = (values) => {
@@ -86,10 +89,13 @@ export default function Home() {
             setError(true);
             return;
         }
+
+        // State updates.
         setError(false);
         setLoading(true);
         setFile(uploadedFiles[0]);
-        console.log(uploadedFiles[0]);
+
+        console.log(uploadedFiles[0]); // -- HERE!
     }, []);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -111,8 +117,9 @@ export default function Home() {
         form.append('image', file);
 
         // Get the image bytes from the form data image file.
-        const image = form.get('image');
-        const imageBytes = new Uint8Array(image);
+        const buffer = file.arrayBuffer();
+        let byteArray = new Int8Array(buffer);
+        console.log(byteArray);
 
         // Minting the NFT asynchronously using IIFE.
         (async () => {
@@ -120,22 +127,11 @@ export default function Home() {
                 await nftMod.mint({
                     name: values.name,
                     description: values.description,
-                    image: imageBytes,
+                    image: byteArray,
                     properties: {}
                 })
             );
         })();
-
-        // axios
-        //     .post('http://localhost:8000/mint', form)
-        //     .then(function (response) {
-        //         console.log(response);
-        //         alert(response.data);
-        //     })
-        //     .catch(function (error) {
-        //         console.log(error);
-        //         alert(error.data);
-        //     });
     }
 
     const formik = useFormik({
