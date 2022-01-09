@@ -96,7 +96,7 @@ export default function Home() {
         setLoading(true);
         setFile(uploadedFiles[0]);
 
-        console.log(uploadedFiles[0]); // -- HERE!
+        console.log(uploadedFiles[0]);
     }, []);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
